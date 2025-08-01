@@ -18,6 +18,9 @@ public class Event {
     private String location;
     @Column(name = "max_guests")
     private int maxGuests;
+    @ManyToOne
+    @JoinColumn(name = "planner_id")
+    private User planner;
 
     @ManyToMany
     @JoinTable(name = "events_users",
@@ -78,6 +81,22 @@ public class Event {
 
     public void setMaxGuests(int maxGuests) {
         this.maxGuests = maxGuests;
+    }
+
+    public User getPlanner() {
+        return planner;
+    }
+
+    public void setPlanner(User planner) {
+        this.planner = planner;
+    }
+
+    public List<User> getUsers() {
+        return users;
+    }
+
+    public void setUsers(List<User> users) {
+        this.users = users;
     }
 
     @Override
