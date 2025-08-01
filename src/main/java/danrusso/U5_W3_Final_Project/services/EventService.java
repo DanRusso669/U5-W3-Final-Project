@@ -2,6 +2,7 @@ package danrusso.U5_W3_Final_Project.services;
 
 import danrusso.U5_W3_Final_Project.entities.Event;
 import danrusso.U5_W3_Final_Project.entities.User;
+import danrusso.U5_W3_Final_Project.exceptions.BadRequestException;
 import danrusso.U5_W3_Final_Project.exceptions.NotFoundException;
 import danrusso.U5_W3_Final_Project.exceptions.UnauthorizedException;
 import danrusso.U5_W3_Final_Project.payloads.NewEventDTO;
@@ -13,6 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -40,7 +42,7 @@ public class EventService {
 
     public void checkPlanner(UUID eventPlannerId, UUID plannerId) {
         if (!eventPlannerId.equals(plannerId))
-            throw new UnauthorizedException("You can't modified someone else's event.");
+            throw new UnauthorizedException("You can't modified or delete someone else's event.");
     }
 
     public Event findByIdAndUpdate(UUID eventId, NewEventDTO payload, User currentAuthUser) {
@@ -62,5 +64,25 @@ public class EventService {
         Event found = this.findById(eventId);
         this.checkPlanner(found.getPlanner().getId(), currentAuthUser.getId());
         this.eventRepository.delete(found);
+    }
+
+    public Event attendAnEvent(UUID eventId, User currentAuthUser) {
+        Event found = this.findById(eventId);
+        List<User> participants = found.getUsers();
+        if (found.getAvailablePlaces() <= 0) {
+            throw new BadRequestException("The event is fully booked.");
+        }
+
+        for (User user : participants) {
+            if (user.getId().equals(currentAuthUser.getId())) {
+                throw new BadRequestException("You are already registered for this event.");
+            }
+        }
+
+        found.setAvailablePlaces(found.getAvailablePlaces() - 1);
+        participants.add(currentAuthUser);
+        this.eventRepository.save(found);
+        return found;
+
     }
 }

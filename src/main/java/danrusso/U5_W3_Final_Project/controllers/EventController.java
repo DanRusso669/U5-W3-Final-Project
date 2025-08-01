@@ -3,6 +3,7 @@ package danrusso.U5_W3_Final_Project.controllers;
 import danrusso.U5_W3_Final_Project.entities.Event;
 import danrusso.U5_W3_Final_Project.entities.User;
 import danrusso.U5_W3_Final_Project.exceptions.ValidationException;
+import danrusso.U5_W3_Final_Project.payloads.EventJoiningDTO;
 import danrusso.U5_W3_Final_Project.payloads.NewEventDTO;
 import danrusso.U5_W3_Final_Project.payloads.NewEventRespDTO;
 import danrusso.U5_W3_Final_Project.services.EventService;
@@ -59,5 +60,11 @@ public class EventController {
     @PreAuthorize("hasAuthority('PLANNER')")
     public void deleteEvent(@PathVariable UUID eventId, @AuthenticationPrincipal User currentAuthUser) {
         this.eventService.findByIdAndDelete(eventId, currentAuthUser);
+    }
+
+    @PostMapping("/{eventId}")
+    public EventJoiningDTO joinEvent(@PathVariable UUID eventId, @AuthenticationPrincipal User currentAuthUser) {
+        Event selectedEvent = this.eventService.attendAnEvent(eventId, currentAuthUser);
+        return new EventJoiningDTO(selectedEvent.getTitle(), selectedEvent.getDate(), selectedEvent.getUsers());
     }
 }

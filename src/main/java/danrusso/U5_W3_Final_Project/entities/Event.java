@@ -18,6 +18,7 @@ public class Event {
     private String location;
     @Column(name = "max_guests")
     private int maxGuests;
+    private int availablePlaces;
     @ManyToOne
     @JoinColumn(name = "planner_id")
     private User planner;
@@ -37,7 +38,16 @@ public class Event {
         this.date = date;
         this.location = location;
         this.maxGuests = maxGuests;
+        this.availablePlaces = maxGuests;
         this.planner = planner;
+    }
+
+    public int getAvailablePlaces() {
+        return availablePlaces;
+    }
+
+    public void setAvailablePlaces(int availablePlaces) {
+        this.availablePlaces = availablePlaces;
     }
 
     public UUID getId() {
