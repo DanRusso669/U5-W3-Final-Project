@@ -1,12 +1,17 @@
 package danrusso.U5_W3_Final_Project.entities;
 
 import jakarta.persistence.*;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
 @Table(name = "users")
-public class User {
+public class User implements UserDetails {
     @Id
     @GeneratedValue
     private UUID id;
@@ -64,6 +69,11 @@ public class User {
         this.password = password;
     }
 
+    @Override
+    public String getUsername() {
+        return this.email;
+    }
+
     public Roles getRole() {
         return role;
     }
@@ -82,5 +92,10 @@ public class User {
                 ", password='" + password + '\'' +
                 ", role=" + role +
                 '}';
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(new SimpleGrantedAuthority(this.role.name()));
     }
 }

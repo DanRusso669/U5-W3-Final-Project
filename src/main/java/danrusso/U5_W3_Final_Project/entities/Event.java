@@ -31,12 +31,13 @@ public class Event {
     public Event() {
     }
 
-    public Event(String title, String description, LocalDate date, String location, int maxGuests) {
+    public Event(String title, String description, LocalDate date, String location, int maxGuests, User planner) {
         this.title = title;
         this.description = description;
         this.date = date;
         this.location = location;
         this.maxGuests = maxGuests;
+        this.planner = planner;
     }
 
     public UUID getId() {

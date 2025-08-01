@@ -1,5 +1,6 @@
 package danrusso.U5_W3_Final_Project.security;
 
+import danrusso.U5_W3_Final_Project.entities.User;
 import danrusso.U5_W3_Final_Project.exceptions.UnauthorizedException;
 import danrusso.U5_W3_Final_Project.services.UserService;
 import danrusso.U5_W3_Final_Project.tools.JWTTools;
@@ -8,11 +9,15 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.UUID;
 
 @Component
 public class CheckFilter extends OncePerRequestFilter {
@@ -26,6 +31,8 @@ public class CheckFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
+        // ******** AUTENTICAZIONE **********
+
         String authHeader = request.getHeader("Authorization");
 
         if (authHeader == null || !authHeader.startsWith("Bearer "))
@@ -34,6 +41,17 @@ public class CheckFilter extends OncePerRequestFilter {
         String accessToken = authHeader.replace("Bearer ", "");
 
         jwtTools.checkValidityToken(accessToken);
+
+        // ******** AUTORIZZAZIONE **********
+
+        String userId = jwtTools.getIdFromToken(accessToken);
+        User currentUser = this.userService.findById(UUID.fromString(userId));
+
+        Authentication authentication = new UsernamePasswordAuthenticationToken(currentUser, null, currentUser.getAuthorities());
+
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        filterChain.doFilter(request, response);
     }
 
     @Override

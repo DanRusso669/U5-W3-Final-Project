@@ -32,4 +32,8 @@ public class JWTTools {
         }
     }
 
+    public String getIdFromToken(String accessToken) {
+        return Jwts.parser().verifyWith(Keys.hmacShaKeyFor(secret.getBytes())).build().parseSignedClaims(accessToken).getPayload().getSubject();
+    }
+
 }
