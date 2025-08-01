@@ -7,6 +7,6 @@ public record LoginDTO(
         @Email(message = "Invalid email format.")
         @NotEmpty(message = "Email is mandatory.")
         String email,
-        // @NotEmpty(message = "Password is mandatory.")
+        @NotEmpty(message = "Password is mandatory.")
         String password) {
 }

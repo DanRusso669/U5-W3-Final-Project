@@ -65,6 +65,6 @@ public class EventController {
     @PostMapping("/{eventId}")
     public EventJoiningDTO joinEvent(@PathVariable UUID eventId, @AuthenticationPrincipal User currentAuthUser) {
         Event selectedEvent = this.eventService.attendAnEvent(eventId, currentAuthUser);
-        return new EventJoiningDTO(selectedEvent.getTitle(), selectedEvent.getDate(), selectedEvent.getUsers());
+        return new EventJoiningDTO(selectedEvent.getTitle(), selectedEvent.getDate());
     }
 }

@@ -1,5 +1,6 @@
 package danrusso.U5_W3_Final_Project.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
@@ -8,6 +9,7 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "events")
+@JsonIgnoreProperties({"users"})
 public class Event {
     @Id
     @GeneratedValue

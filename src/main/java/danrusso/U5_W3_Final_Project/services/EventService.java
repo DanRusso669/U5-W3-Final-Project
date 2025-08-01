@@ -4,7 +4,6 @@ import danrusso.U5_W3_Final_Project.entities.Event;
 import danrusso.U5_W3_Final_Project.entities.User;
 import danrusso.U5_W3_Final_Project.exceptions.BadRequestException;
 import danrusso.U5_W3_Final_Project.exceptions.NotFoundException;
-import danrusso.U5_W3_Final_Project.exceptions.UnauthorizedException;
 import danrusso.U5_W3_Final_Project.payloads.NewEventDTO;
 import danrusso.U5_W3_Final_Project.repositories.EventRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +11,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -42,14 +42,13 @@ public class EventService {
 
     public void checkPlanner(UUID eventPlannerId, UUID plannerId) {
         if (!eventPlannerId.equals(plannerId))
-            throw new UnauthorizedException("You can't modified or delete someone else's event.");
+            throw new AuthorizationDeniedException("You can't modified or delete someone else's event.");
     }
 
     public Event findByIdAndUpdate(UUID eventId, NewEventDTO payload, User currentAuthUser) {
         Event found = this.findById(eventId);
         this.checkPlanner(found.getPlanner().getId(), currentAuthUser.getId());
-//        if (found.getPlanner().getId() != plannerId)
-//            throw new UnauthorizedException("You can't modified someone else's event.");
+
 
         found.setTitle(payload.title());
         found.setDescription(payload.description());
@@ -68,11 +67,11 @@ public class EventService {
 
     public Event attendAnEvent(UUID eventId, User currentAuthUser) {
         Event found = this.findById(eventId);
-        List<User> participants = found.getUsers();
         if (found.getAvailablePlaces() <= 0) {
             throw new BadRequestException("The event is fully booked.");
         }
 
+        List<User> participants = found.getUsers();
         for (User user : participants) {
             if (user.getId().equals(currentAuthUser.getId())) {
                 throw new BadRequestException("You are already registered for this event.");
