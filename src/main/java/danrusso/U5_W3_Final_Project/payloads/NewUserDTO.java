@@ -1,6 +1,9 @@
 package danrusso.U5_W3_Final_Project.payloads;
 
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 
 public record NewUserDTO(
         @NotEmpty(message = "Name is mandatory.")
@@ -12,9 +15,10 @@ public record NewUserDTO(
         @Email(message = "Invalid email format.")
         @NotEmpty(message = "Email is mandatory.")
         String email,
-        @Min(4)
-        @Pattern(regexp = "^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{4,}$", message = "Password must be atleast 8 characters, atleast one upperCase, one lowerCase letter, one digit e one special character.")
+        @NotEmpty(message = "Password is mandatory.")
+        @Pattern(regexp = "^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{4,}$", message = "Password must be at least 8 characters, contain one upperCase, one lowerCase letter, one digit e one special character.")
         String password,
+        @NotEmpty(message = "Role is mandatory.")
         String role
 ) {
 }

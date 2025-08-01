@@ -3,6 +3,7 @@ package danrusso.U5_W3_Final_Project.services;
 import danrusso.U5_W3_Final_Project.entities.Roles;
 import danrusso.U5_W3_Final_Project.entities.User;
 import danrusso.U5_W3_Final_Project.exceptions.BadRequestException;
+import danrusso.U5_W3_Final_Project.exceptions.NotFoundException;
 import danrusso.U5_W3_Final_Project.payloads.NewUserDTO;
 import danrusso.U5_W3_Final_Project.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +28,7 @@ public class UserService {
             throw new BadRequestException("Email " + payload.email() + "is already in use.");
         });
 
-        User newUser = new User(payload.name(), payload.surname(), payload.email(), bcrypt.encode(payload.password()), Roles.valueOf(payload.role()));
+        User newUser = new User(payload.name(), payload.surname(), payload.email(), bcrypt.encode(payload.password()), Roles.valueOf(payload.role().toUpperCase()));
         this.userRepository.save(newUser);
         return newUser;
     }
@@ -36,5 +37,9 @@ public class UserService {
         if (pageSize > 10) pageSize = 10;
         Pageable pageable = PageRequest.of(pageNum, pageSize, Sort.by(sortBy));
         return this.userRepository.findAll(pageable);
+    }
+
+    public User findByEmail(String email) {
+        return this.userRepository.findByEmail(email).orElseThrow(() -> new NotFoundException(email));
     }
 }
