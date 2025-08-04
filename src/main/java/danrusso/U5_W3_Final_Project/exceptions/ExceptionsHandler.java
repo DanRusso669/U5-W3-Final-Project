@@ -3,6 +3,7 @@ package danrusso.U5_W3_Final_Project.exceptions;
 import danrusso.U5_W3_Final_Project.payloads.ErrorsDTO;
 import danrusso.U5_W3_Final_Project.payloads.ErrorsWithListDTO;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -29,6 +30,12 @@ public class ExceptionsHandler {
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorsDTO handleNotFound(NotFoundException ex) {
         return new ErrorsDTO(ex.getMessage(), LocalDateTime.now());
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorsDTO handleEmptyBody(HttpMessageNotReadableException ex) {
+        return new ErrorsDTO("Body can't be empty.", LocalDateTime.now());
     }
 
     @ExceptionHandler(UnauthorizedException.class)
